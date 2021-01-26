@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+worktime() {
+  ln -sf ~/.ssh/shopify_rsa ~/.ssh/google_compute_engine
+  ln -sf ~/.ssh/shopify_rsa.pub ~/.ssh/google_compute_engine.pub
+  ln -sf ~/.ssh/shopify_rsa ~/.ssh/id_rsa
+  ln -sf ~/.ssh/shopify_rsa.pub ~/.ssh/id_rsa.pub
+  ln -sf ~/.ssh/config.d/shopify ~/.ssh/config.d/active
+  gcloud config configurations activate shopify
+  gcloud config set account jonathan.pulsifer@shopify.com
+  gcloud config set project shopify-codelab-and-demos
+}
+
+worktime

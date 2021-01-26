@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+export DDNS_ENDPOINT="https://us-east4-homelab-ng.cloudfunctions.net/ddns"
+export DDNS_API_TOKEN=""
+export DDNS_DOMAIN="home.pulsifer.ca"
+
+/home/jawn/bin/ddnsb0t --once "$@"

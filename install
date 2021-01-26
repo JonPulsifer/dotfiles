@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+set -xeu
+
+# the current (real) directory, could be ~/.dotfiles, could be ~/src/github.com/jonpulsifer/dotfiles
+dotfiles=$( dirname "$( realpath -s "${BASH_SOURCE[0]}" )" )
+
+# we need wget to go brr
+ensure_dependencies() {
+  local -r deps="wget"
+  for file in ${deps}; do
+    command -v ${file} || { echo -e "${file} not found.\nEnsure ${file} is installed and in your PATH"; exit 1; } ;
+  done
+}
+
+# source the nix profile and ensure `nix` is found
+load_nix() {
+  # shellcheck disable=1090
+  source "${HOME}/.nix-profile/etc/profile.d/nix.sh"
+  command -v nix
+}
+
+# sudo pipe bash for the win + initalize nixpkgs
+install_nix() {
+  command -v nix || wget -qO - https://nixos.org/nix/install | sh
+  [ -d "${HOME}/.config/nixpkgs" ] || {
+    mkdir -vp ~/.config/nixpkgs;
+    ln -vs "${dotfiles}/nix/home.nix" ~/.config/nixpkgs/home.nix;
+    ln -vs "${dotfiles}/nix/config.nix" ~/.config/nixpkgs/home.nix;
+  }
+  load_nix && nix-channel --update
+}
+
+# link ~/.dotfiles, install home-manager if not found, and run `home-manager switch`
+install_dotfiles() {
+  ln -fvs "${dotfiles}" "${symlink}"
+  command -v home-manager || nix-env -iA 'nixpkgs.home-manager'
+  home-manager switch -b '.bak'
+}
+
+# brrr
+ensure_dependencies
+load_nix || install_nix
+install_dotfiles

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+download-skaffold() {
+  local OS=linux
+  local dir=$(pwd)
+
+  # usage
+  [[ $1 =~ --?h(elp)?  ]] && { echo "usage: download-skaffold /path/to/download/to" >&2; return 1; }
+  [[ ! -z $1 ]] && { dir=$1; }
+
+
+  # switch out for macOS if we have to
+  [ `uname -s` == "Darwin" ] && { OS=darwin; }
+
+  wget -O ${dir}/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-${OS}-amd64 && \
+  chmod +x ${dir}/skaffold
+}
+
+download-skaffold "$@"

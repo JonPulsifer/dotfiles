@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+sssh(){
+    # try to connect every 0.5 secs
+    while true; do command ssh "$@"; [ $? -ne 255  ] && break || sleep 0.5; done
+}
+
+sssh "$@"

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+where() {
+  ls -l `which $1`
+}
+
+where "$@"

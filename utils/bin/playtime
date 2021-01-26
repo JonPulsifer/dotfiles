@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+playtime() {
+  ln -sf ~/.ssh/id_ed25519 ~/.ssh/google_compute_engine
+  ln -sf ~/.ssh/id_ed25519.pub ~/.ssh/google_compute_engine.pub
+  ln -sf ~/.ssh/config.d/dotfiles ~/.ssh/config.d/active
+  gcloud config configurations activate home
+  gcloud config set account jonathan@pulsifer.ca
+  gcloud config set project jonpulsifer
+}
+
+playtime

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+download-kubectl() {
+  local OS=linux
+  local dir=$(pwd)
+
+  [ `uname -s` == "Darwin" ] && { OS=darwin; }
+
+  wget -O ${dir}/kubectl https://storage.googleapis.com/kubernetes-release/release/v${1}/bin/${OS}/amd64/kubectl && chmod +x ${dir}/kubectl
+}
+
+download-kubectl "$@"
