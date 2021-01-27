@@ -12,7 +12,7 @@ let
   homedir = builtins.getEnv "HOME";
   dotfiles = "${homedir}/.dotfiles";
   homeutils = pkgs.callPackage ../utils { };
-  homeEnv = rec {
+  commonEnv = rec {
     CLOUDSDK_CONFIG = "${homedir}/.config/gcloud";
     EDITOR = "vim";
     GIT_EDITOR = EDITOR;
@@ -23,11 +23,15 @@ let
       "${homedir}/.kube/config:${homedir}/.kube/config.shopify.cloudplatform";
     LANG = "en_US.UTF-8";
     LC_ALL = LANG;
-    LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";
     PATH = "${homedir}/bin:${homedir}/opt/google-cloud-sdk/bin:$PATH";
     VAULT_ADDR = "https://vault.pulsifer.ca";
     # VAULT_CACERT="${dotfiles}/ca.crt";
   };
+  linuxEnv = { LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive"; };
+  homeEnv = if pkgs.stdenv.hostPlatform.isMacOS then
+      commonEnv
+    else
+      commonEnv // linuxEnv;
 in {
   manual.manpages.enable = false;
   home.packages = with pkgs; [
@@ -151,6 +155,7 @@ in {
       size = 50000;
       save = 50000;
     };
+    sessionVariables = homeEnv;
     shellAliases = import ../home/aliases.nix;
     defaultKeymap = "emacs";
     initExtraBeforeCompInit = ''
@@ -199,8 +204,6 @@ in {
         };
       }
     ];
-
-    sessionVariables = homeEnv;
   };
   programs.neovim = {
     enable = true;
@@ -235,7 +238,9 @@ in {
   programs.tmux = {
     enable = true;
     baseIndex = 1;
-    prefix = "C-g";
+    shortcut = "g";
+    escapeTime = 0;
+    historyLimit = 500000;
     terminal = "screen-256color";
     extraConfig = builtins.readFile ../home/tmux.conf
       + (if pkgs.stdenv.isDarwin then

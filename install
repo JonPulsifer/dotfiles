@@ -22,17 +22,17 @@ load_nix() {
 # sudo pipe bash for the win + initalize nixpkgs
 install_nix() {
   command -v nix || wget -qO - https://nixos.org/nix/install | sh
-  [ -d "${HOME}/.config/nixpkgs" ] || {
-    mkdir -vp ~/.config/nixpkgs;
-    ln -vs "${dotfiles}/nix/home.nix" ~/.config/nixpkgs/home.nix;
-    ln -vs "${dotfiles}/nix/config.nix" ~/.config/nixpkgs/home.nix;
-  }
+  if [ -d "${HOME}/.config/nixpkgs" ] || [ -L "${HOME}/.config/nixpkgs" ]; then
+    echo ':( ~/.config/nixpkgs exists, you might not want to delete it'
+    exit 1
+  else
+    ln -fvs "${dotfiles}/nix" ~/.config/nixpkgs;
+  fi
   load_nix && nix-channel --update
 }
 
-# link ~/.dotfiles, install home-manager if not found, and run `home-manager switch`
+# install home-manager if not found and run `home-manager switch`
 install_dotfiles() {
-  ln -fvs "${dotfiles}" "${symlink}"
   command -v home-manager || nix-env -iA 'nixpkgs.home-manager'
   home-manager switch -b '.bak'
 }
