@@ -46,6 +46,7 @@ in {
     htop
     httpie
     jq
+    ngrok
     nmap
     unzip
     wget
