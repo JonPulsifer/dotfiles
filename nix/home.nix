@@ -1,7 +1,6 @@
 { pkgs, lib, ... }:
 
 let
-  nixpkgs = builtins.fetchTarball (import ./nixpkgs.nix);
   name = "Jonathan Pulsifer";
   email = if pkgs.stdenv.hostPlatform.isMacOS then
       "jonathan.pulsifer@shopify.com"
