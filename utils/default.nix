@@ -1,4 +1,4 @@
-{ nixpkgs ? import <nixpkgs> {  } }:
+{ nixpkgs ? import <nixpkgs> { } }:
 nixpkgs.stdenv.mkDerivation {
   pname = "utils";
   version = "0.1.0";
