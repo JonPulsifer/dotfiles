@@ -72,7 +72,17 @@ in {
   ];
   programs.bat.enable = true;
   programs.command-not-found.enable = true;
-  programs.fzf.enable = true;
+  programs.fzf = {
+    enable = true;
+    defaultCommand = "fd --type f";
+    defaultOptions = [
+      "--reverse"
+      "--info=inline"
+      "--border"
+      "--height=40%"
+      "--margin=0,50,0,0"
+    ];
+  };
   programs.gpg.enable = true;
   programs.starship.enable = false;
   programs.git = {
