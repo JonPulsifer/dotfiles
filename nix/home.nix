@@ -159,65 +159,6 @@ in {
       done
     '';
   };
-  programs.zsh = {
-    enable = false;
-    enableCompletion = true;
-    enableAutosuggestions = true;
-    history = {
-      path = "${homedir}/.zsh_history";
-      size = 50000;
-      save = 50000;
-    };
-    sessionVariables = homeEnv;
-    shellAliases = import ../home/aliases.nix;
-    defaultKeymap = "emacs";
-    initExtraBeforeCompInit = ''
-      setopt prompt_subst
-      setopt AUTO_CD
-      setopt EXTENDED_GLOB
-      setopt NOMATCH
-      setopt PROMPT_SP
-      setopt auto_pushd
-      setopt append_history
-    '';
-    initExtra = ''
-      autoload -Uz promptinit
-      promptinit
-      # zsh-mime-setup
-      autoload colors
-      colors
-      zstyle ':completion:*' special-dirs true
-      zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,comm'
-      zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
-      if [ -f ~/.nix-profile/etc/profile.d/nix.sh ]; then
-        source ~/.nix-profile/etc/profile.d/nix.sh
-      fi
-      if [ -f /opt/dev/dev.sh ]; then
-        source /opt/dev/dev.sh
-      fi
-    '';
-
-    plugins = [
-      {
-        name = "zsh-autosuggestions";
-        src = pkgs.fetchFromGitHub {
-          owner = "zsh-users";
-          repo = "zsh-autosuggestions";
-          rev = "v0.6.4";
-          sha256 = "1h8h2mz9wpjpymgl2p7pc146c1jgb3dggpvzwm9ln3in336wl951";
-        };
-      }
-      {
-        name = "zsh-syntax-highlighting";
-        src = pkgs.fetchFromGitHub {
-          owner = "zsh-users";
-          repo = "zsh-syntax-highlighting";
-          rev = "0.8.0-alpha1-pre-redrawhook";
-          sha256 = "0w8x5ilpwx90s2s2y56vbzq92ircmrf0l5x8hz4g1nx3qzawv6az";
-        };
-      }
-    ];
-  };
   programs.neovim = {
     enable = true;
     viAlias = true;
@@ -246,6 +187,21 @@ in {
       vim-ruby
       vim-tsx
       vim-terraform
+
+      coc-fzf
+      coc-go
+      coc-eslint
+      coc-highlight
+      coc-git
+      coc-json
+      coc-markdownlint
+      coc-nvim
+      coc-python
+      coc-solargraph
+      coc-tslint
+      coc-tsserver
+      coc-yaml
+      coc-yank
     ];
   };
   programs.tmux = {
