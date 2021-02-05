@@ -1,11 +1,11 @@
-{ pkgs, lib, ... }:
+{ pkgs, ... }:
 
 let
   name = "Jonathan Pulsifer";
   email = if pkgs.stdenv.hostPlatform.isMacOS then
-      "jonathan.pulsifer@shopify.com"
-    else
-      "jonathan@pulsifer.ca";
+    "jonathan.pulsifer@shopify.com"
+  else
+    "jonathan@pulsifer.ca";
   pgpkey = "29034642BD1D7CAFDC0445540472D3B3F5012430";
   github = "jonpulsifer";
   homedir = builtins.getEnv "HOME";
@@ -26,11 +26,13 @@ let
     VAULT_ADDR = "https://vault.pulsifer.ca";
     # VAULT_CACERT="${dotfiles}/ca.crt";
   };
-  linuxEnv = { LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive"; };
+  linuxEnv = {
+    LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";
+  };
   homeEnv = if pkgs.stdenv.hostPlatform.isMacOS then
-      commonEnv
-    else
-      commonEnv // linuxEnv;
+    commonEnv
+  else
+    commonEnv // linuxEnv;
 in {
   manual.manpages.enable = false;
   home.packages = with pkgs; [
@@ -127,7 +129,8 @@ in {
     historyFileSize = 1000000;
     historyFile = "${homedir}/.bash_history";
     historyControl = [ "erasedups" "ignoredups" "ignorespace" ];
-    historyIgnore = [ "ls" "ll" "cd" "exit" "pwd" ];
+    historyIgnore =
+      [ "ls" "ll" "cd" "exit" "pwd" "switch" "neofetch" "bruh" "-l" ];
 
     sessionVariables = homeEnv;
     shellAliases = import ../home/aliases.nix;
