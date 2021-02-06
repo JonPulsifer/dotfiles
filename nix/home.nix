@@ -1,6 +1,7 @@
 { pkgs, ... }:
 
 let
+  # it me
   name = "Jonathan Pulsifer";
   email = if pkgs.stdenv.hostPlatform.isMacOS then
     "jonathan.pulsifer@shopify.com"
@@ -8,9 +9,10 @@ let
     "jonathan@pulsifer.ca";
   pgpkey = "29034642BD1D7CAFDC0445540472D3B3F5012430";
   github = "jonpulsifer";
+
+  # environment
   homedir = builtins.getEnv "HOME";
   dotfiles = "${homedir}/.dotfiles";
-  homeutils = pkgs.callPackage ../utils { };
   commonEnv = rec {
     CLOUDSDK_CONFIG = "${homedir}/.config/gcloud";
     EDITOR = "vim";
@@ -33,11 +35,15 @@ let
     commonEnv
   else
     commonEnv // linuxEnv;
+
+  # custom packages
+  shell-utils = pkgs.callPackage ../src/shell-utils { };
+
 in {
   manual.manpages.enable = false;
   home.packages = with pkgs; [
-    # packages found in ../utils
-    homeutils
+    # packages found in ../src
+    shell-utils
 
     # things i use
     _1password
@@ -74,7 +80,7 @@ in {
   programs.command-not-found.enable = true;
   programs.fzf = {
     enable = true;
-    defaultCommand = "fd --type f";
+    defaultCommand = "${pkgs.fd}/bin/fd --type f";
     defaultOptions = [
       "--reverse"
       "--info=inline"
@@ -139,11 +145,10 @@ in {
     historyFileSize = 1000000;
     historyFile = "${homedir}/.bash_history";
     historyControl = [ "erasedups" "ignoredups" "ignorespace" ];
-    historyIgnore =
-      [ "ls" "ll" "cd" "exit" "pwd" "switch" "neofetch" "bruh" "-l" ];
+    historyIgnore = [ "ls" "ll" "cd" "exit" "pwd" "neofetch" "bruh" "-l" ];
 
     sessionVariables = homeEnv;
-    shellAliases = import ../home/aliases.nix;
+    shellAliases = import ../src/aliases.nix;
     profileExtra = ''
       export PS1="\[\e[34;1m\]\w \[\e[37;1m\]$\[\e[m\] "
       declare -a files=(
@@ -211,9 +216,9 @@ in {
     escapeTime = 0;
     historyLimit = 500000;
     terminal = "screen-256color";
-    extraConfig = builtins.readFile ../home/tmux.conf
+    extraConfig = builtins.readFile ../src/tmux.conf
       + (if pkgs.stdenv.isDarwin then
-        builtins.readFile ../home/tmux.darwin.conf
+        builtins.readFile ../src/tmux.darwin.conf
       else
         "");
     plugins = with pkgs; [
@@ -222,7 +227,7 @@ in {
           pluginName = "1password";
           rtpFilePath = "plugin.tmux";
           version = "master";
-          src = pkgs.fetchFromGitHub {
+          src = fetchFromGitHub {
             owner = "yardnsm";
             repo = "tmux-1password";
             rev = "d541aa3cd44417d314a13216b9621d9b6c88235d";

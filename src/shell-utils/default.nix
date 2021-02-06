@@ -1,6 +1,6 @@
 { nixpkgs ? import <nixpkgs> { } }:
 nixpkgs.stdenv.mkDerivation {
-  pname = "utils";
+  pname = "shell-utils";
   version = "0.1.0";
   src = ./bin;
   buildinputs = [ nixpkgs.bash ];
