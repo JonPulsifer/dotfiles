@@ -59,6 +59,7 @@ in {
     ngrok
     nmap
     unzip
+    vault
     wget
     youtube-dl
 
@@ -170,46 +171,46 @@ in {
     enable = true;
     viAlias = true;
     vimAlias = true;
-    extraConfig = builtins.readFile ../home/vimrc;
-    plugins = with pkgs.vimPlugins; [
-      ale
-      commentary
-      fugitive
-      fzf-vim
-      gitgutter
-      nerdtree
-      papercolor-theme
-      surround
-      vim-codefmt
-      vim-endwise
-      vim-startify
+    extraConfig = builtins.readFile ../src/vimrc;
+    plugins = with pkgs.vimPlugins;
+      [
+        ale
+        commentary
+        fugitive
+        fzf-vim
+        gitgutter
+        nerdtree
+        papercolor-theme
+        surround
+        vim-codefmt
+        vim-endwise
+        vim-startify
 
-      vim-go
-      vim-javascript
-      vim-javascript-syntax
-      vim-jsbeautify
-      vim-json
-      vim-markdown
-      vim-nix
-      vim-ruby
-      vim-tsx
-      vim-terraform
+        vim-go
+        vim-javascript
+        vim-javascript-syntax
+        vim-jsbeautify
+        vim-json
+        vim-markdown
+        vim-nix
+        vim-ruby
+        vim-tsx
+        vim-terraform
 
-      coc-fzf
-      coc-go
-      coc-eslint
-      coc-highlight
-      coc-git
-      coc-json
-      coc-markdownlint
-      coc-nvim
-      coc-python
-      coc-solargraph
-      coc-tslint
-      coc-tsserver
-      coc-yaml
-      coc-yank
-    ];
+        coc-fzf
+        coc-eslint
+        coc-highlight
+        coc-git
+        coc-json
+        coc-markdownlint
+        coc-nvim
+        coc-python
+        coc-solargraph
+        coc-tslint
+        coc-tsserver
+        coc-yaml
+        coc-yank
+      ] ++ (if !pkgs.stdenv.isAarch64 then [ coc-go ] else [ ]);
   };
   programs.tmux = {
     enable = true;

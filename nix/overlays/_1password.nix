@@ -1,16 +1,15 @@
-# https://github.com/NixOS/nixpkgs/issues/105119
 self: super: {
   _1password = super._1password.overrideAttrs (oldAttrs: rec {
     version = "1.8.0";
     src = if super.stdenv.isLinux then
       super.fetchzip {
         url = {
-          "aarch64-linux" =
-            "https://cache.agilebits.com/dist/1P/op/pkg/v${version}/op_linux_arm_v${version}.zip";
           "i686-linux" =
             "https://cache.agilebits.com/dist/1P/op/pkg/v${version}/op_linux_386_v${version}.zip";
           "x86_64-linux" =
             "https://cache.agilebits.com/dist/1P/op/pkg/v${version}/op_linux_amd64_v${version}.zip";
+          "aarch64-linux" =
+            "https://cache.agilebits.com/dist/1P/op/pkg/v${version}/op_linux_arm_v${version}.zip";
         }.${super.stdenv.hostPlatform.system};
         sha256 = {
           "aarch64-linux" =
@@ -28,7 +27,7 @@ self: super: {
       };
     meta = with super.lib; {
       platforms =
-        [ "aarch64-linux" "i686-linux" "x86_64-linux" "x86_64-darwin" ];
+        [ "i686-linux" "x86_64-linux" "x86_64-darwin" "aarch64-linux" ];
     };
   });
 }
