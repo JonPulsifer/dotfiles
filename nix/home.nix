@@ -186,7 +186,6 @@ in {
         vim-endwise
         vim-startify
 
-        vim-go
         vim-javascript
         vim-javascript-syntax
         vim-jsbeautify
@@ -210,7 +209,7 @@ in {
         coc-tsserver
         coc-yaml
         coc-yank
-      ] ++ (if !pkgs.stdenv.isAarch64 then [ coc-go ] else [ ]);
+      ] ++ (if !pkgs.stdenv.isAarch64 then [ vim-go coc-go ] else [ ]);
   };
   programs.tmux = {
     enable = true;
