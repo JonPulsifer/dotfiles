@@ -38,12 +38,14 @@ let
 
   # custom packages
   shell-utils = pkgs.callPackage ../src/shell-utils { };
+  ddnsb0t = pkgs.callPackage ../src/ddnsb0t { };
 
 in {
   manual.manpages.enable = false;
   home.packages = with pkgs; [
     # packages found in ../src
     shell-utils
+    ddnsb0t
 
     # things i use
     _1password
