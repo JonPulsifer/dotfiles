@@ -25,6 +25,7 @@ let
     LANG = "en_US.UTF-8";
     LC_ALL = LANG;
     PATH = "${homedir}/bin:${homedir}/opt/google-cloud-sdk/bin:$PATH";
+    PROMPT_DIRTRIM = 3;
     VAULT_ADDR = "https://vault.pulsifer.ca";
     # VAULT_CACERT="${dotfiles}/ca.crt";
   };
@@ -153,7 +154,7 @@ in {
     sessionVariables = homeEnv;
     shellAliases = import ../src/aliases.nix;
     profileExtra = ''
-      export PS1="\[\e[34;1m\]\w \[\e[37;1m\]$\[\e[m\] "
+      export PS1="\[\e[34;1m\]\u\[\e[37;1m\]@\[\e[36;1m\]\H\[\e[37;1m\]:\[\e[34;1m\]\w \[\e[37;1m\]$\[\e[m\] "
       declare -a files=(
         ${homedir}/.nix-profile/etc/profile.d/nix.sh
         ${homedir}/.nix-profile/share/bash-completion/bash_completion
