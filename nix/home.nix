@@ -242,6 +242,13 @@ in {
           set -g @1password-vault 'afh4hmnamahifeepetyjloissq'
           set -g @1password-key 'x'
           set -g @1password-copy-to-clipboard 'off'
+          set -g @1password-items-jq-filter '\
+            .[] \
+            | [select(.overview.tags | map(select(. == "tmux")) | length == 1)?] \
+            | map([ .overview.title, .uuid ] \
+            | join(",")) \
+            | .[] \
+         '
         '';
       }
       tmuxPlugins.tmux-fzf
