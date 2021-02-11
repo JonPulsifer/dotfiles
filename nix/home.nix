@@ -40,6 +40,7 @@ let
   # custom packages
   shell-utils = pkgs.callPackage ../src/shell-utils { };
   ddnsb0t = pkgs.callPackage ../src/ddnsb0t { };
+  emacs = if pkgs.stdenv.isDarwin then pkgs.emacsMacport else pkgs.emacs;
 
 in {
   manual.manpages.enable = false;
@@ -82,6 +83,13 @@ in {
   ];
   programs.bat.enable = true;
   programs.command-not-found.enable = true;
+
+  home.file.".emacs.d/init.el".source = ../src/init.el;
+  programs.emacs = {
+    enable = true;
+    package = emacs;
+  };
+
   programs.fzf = {
     enable = true;
     defaultCommand = "${pkgs.fd}/bin/fd --type f";
@@ -141,6 +149,8 @@ in {
       "*.pub"
       "credentials.json"
       "secrets*.json"
+      "\\#*\\#"
+      "*~"
     ];
   };
   programs.bash = {
@@ -152,7 +162,7 @@ in {
     historyIgnore = [ "ls" "ll" "cd" "exit" "pwd" "neofetch" "bruh" "-l" ];
 
     sessionVariables = homeEnv;
-    shellAliases = import ../src/aliases.nix;
+    shellAliases = import ../src/aliases.nix { emacs = emacs; };
     profileExtra = ''
       export PS1="\[\e[34;1m\]\u\[\e[37;1m\]@\[\e[36;1m\]\h\[\e[37;1m\]:\[\e[34;1m\]\w \[\e[37;1m\]$\[\e[m\] "
       declare -a files=(
