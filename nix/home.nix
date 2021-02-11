@@ -44,7 +44,11 @@ let
 
 in {
   manual.manpages.enable = false;
+  fonts.fontconfig.enable = true;
   home.packages = with pkgs; [
+    # fonts
+    fira-code
+
     # packages found in ../src
     shell-utils
     ddnsb0t
