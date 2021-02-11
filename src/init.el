@@ -4,3 +4,27 @@
 (custom-set-variables
  '(custom-enabled-themes '(tango-dark)))
 (custom-set-faces)
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
+;; and `package-pinned-packages`. Most users will not need or want to do this.
+;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(package-initialize)
+(require 'all-the-icons)
+(require 'dashboard)
+(require 'projectile)
+(require 'nix-mode)
+(add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-mode))
+
+(projectile-mode +1)
+(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+(setq dashboard-set-heading-icons t)
+(setq dashboard-set-file-icons t)
+(setq dashboard-set-navigator t)
+(setq dashboard-items '((recents  . 5)
+		        (bookmarks . 5)
+			(projects . 5)
+			(agenda . 5)
+                        (registers . 5)))
+(dashboard-setup-startup-hook)
