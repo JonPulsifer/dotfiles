@@ -17,7 +17,16 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(initial-buffer-choice "~/.emacs"))
+ '(initial-buffer-choice "~/.emacs")
+ '(package-selected-packages '(emojify kubernetes dockerfile-mode docker magithub deadgrep tide
+				       rjsx-mode json-mode web-mode yaml-mode terraform-mode
+				       company-quickhelp ws-butler projectile dashboard-hackernews
+				       elisp-format use-package typescript-mode tablist pos-tip
+				       nyan-mode nix-mode neotree magit-popup magit js2-mode ivy
+				       flycheck exec-path-from-shell dracula-theme dashboard company
+				       all-the-icons)))
+
+(setq default-directory (getenv "HOME"))
 
 (let ((auto-save-dir (concat user-emacs-directory "autosave"))
       (backup-dir (concat user-emacs-directory "backups")))
@@ -46,8 +55,18 @@
 (setq use-package-always-ensure t)
 
 (use-package
+  exec-path-from-shell
+  :if (is-mac-p)
+  :init (exec-path-from-shell-initialize))
+
+(use-package
+  flycheck
+  :hook ((after-init . global-flycheck-mode)
+	 (typescript-mode . 'flycheck-mode)))
+
+(use-package
   dracula-theme
-  :init (load-theme 'dracula t))
+  :config (load-theme 'dracula t))
 
 (use-package
   elisp-format)
@@ -86,7 +105,7 @@
   (setq dashboard-set-file-icons t)
   (setq dashboard-set-navigator t)
   (setq dashboard-items '((agenda    . 10)
-			  (recents   . 5)
+			  (recents   . 10)
 			  (projects  . 5)
 			  (hackernews . 10)))
   (dashboard-setup-startup-hook))
@@ -105,25 +124,19 @@
   :hook (prog-mode . ws-butler-mode))
 (setq-default show-trailing-whitespace t)
 
-;; syntax checking
-(use-package
-  flycheck
-  :init (global-flycheck-mode)
-  :hook (typescript-mode . 'flycheck-mode))
-
 ;; completion
 (use-package
   company
   :config (setq company-show-numbers t)
   (setq company-tooltip-align-annotations t)
   (setq company-tooltip-flip-when-above t)
-  (global-company-mode))
+  (global-company-mode t))
 
 (use-package
   company-quickhelp
-  :init (company-quickhelp-mode 1)
-  (use-package
-    pos-tip))
+  :init (use-package
+	  pos-tip)
+  :config (company-quickhelp-mode))
 
 ;; languages
 (use-package

@@ -71,12 +71,13 @@ in {
     kubectl
     ngrok
     nixfmt
+    nix-linter
     nmap
     shellcheck
     unzip
     vault
     wget
-    wol
+    # wol
     youtube-dl
 
     # bruh
