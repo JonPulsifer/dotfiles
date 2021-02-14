@@ -15,7 +15,7 @@ let
   dotfiles = "${homedir}/.dotfiles";
   commonEnv = rec {
     CLOUDSDK_CONFIG = "${homedir}/.config/gcloud";
-    EDITOR = "vim";
+    EDITOR = "emacs";
     GIT_EDITOR = EDITOR;
     VISUAL = EDITOR;
     GO111MODULE = "on";
@@ -24,7 +24,8 @@ let
       "${homedir}/.kube/config:${homedir}/.kube/config.shopify.cloudplatform";
     LANG = "en_US.UTF-8";
     LC_ALL = LANG;
-    PATH = "${homedir}/bin:${homedir}/opt/google-cloud-sdk/bin:$PATH";
+    PATH =
+      "${homedir}/bin:${homedir}/opt/google-cloud-sdk/bin:${homedir}/node_modules/.bin:$PATH";
     PROMPT_DIRTRIM = 3;
     VAULT_ADDR = "https://vault.pulsifer.ca";
     # VAULT_CACERT="${dotfiles}/ca.crt";
@@ -53,6 +54,12 @@ in {
     shell-utils
     ddnsb0t
 
+    # languages
+    go
+    nodejs
+    ruby
+    yarn
+
     # things i use
     _1password
     awscli
@@ -61,11 +68,15 @@ in {
     htop
     httpie
     jq
+    kubectl
     ngrok
+    nixfmt
     nmap
+    shellcheck
     unzip
     vault
     wget
+    wol
     youtube-dl
 
     # bruh
@@ -88,6 +99,7 @@ in {
   programs.command-not-found.enable = true;
 
   home.file.".emacs.d/init.el".source = ../src/init.el;
+  home.file.".emacs.d/ws-trim.el".source = ../src/ws-trim.el;
   programs.emacs = {
     enable = true;
     package = emacs;
@@ -231,7 +243,7 @@ in {
     shortcut = "g";
     escapeTime = 0;
     historyLimit = 500000;
-    terminal = "screen-256color";
+    terminal = "xterm-256color";
     extraConfig = builtins.readFile ../src/tmux.conf
       + (if pkgs.stdenv.isDarwin then
         builtins.readFile ../src/tmux.darwin.conf
