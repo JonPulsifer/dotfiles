@@ -2,6 +2,7 @@
 ;;; Commentary:
 
 ;;; Code:
+(server-start)
 (set-frame-font "Fira Code 16" nil t)
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -24,7 +25,7 @@
 				       elisp-format use-package typescript-mode tablist pos-tip
 				       nyan-mode nix-mode neotree magit-popup magit js2-mode ivy
 				       flycheck exec-path-from-shell dracula-theme dashboard company
-				       all-the-icons)))
+				       all-the-icons treemacs treemacs-all-the-icons treemacs-magit treemacs-projectile)))
 
 (setq default-directory (getenv "HOME"))
 
@@ -83,13 +84,19 @@
   (setq neo-vc-integration '(face))
   :bind (("<f2>" . neotree-toggle)))
 
+(use-package treemacs
+  :init
+  (use-package treemacs-all-the-icons)
+  (use-package treemacs-magit)
+  (use-package treemacs-projectile))
+
 (use-package
   ivy
   :init (ivy-mode 1))
 
 (use-package
   dashboard
-  :if (< (length command-line-args) 2)
+  ;; :if (< (length command-line-args) 2)
   :init (use-package
 	  dashboard-hackernews)
   (use-package
@@ -122,7 +129,7 @@
 (use-package
   ws-butler
   :hook (prog-mode . ws-butler-mode))
-(setq-default show-trailing-whitespace t)
+(setq-default show-trailing-whitespace nil)
 
 ;; completion
 (use-package

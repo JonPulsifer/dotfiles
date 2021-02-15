@@ -71,7 +71,7 @@ in {
     kubectl
     ngrok
     nixfmt
-    nix-linter
+    # nix-linter
     nmap
     shellcheck
     unzip
