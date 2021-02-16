@@ -100,7 +100,7 @@ in {
   programs.command-not-found.enable = true;
 
   home.file.".emacs.d/init.el".source = ../src/init.el;
-  home.file.".emacs.d/ws-trim.el".source = ../src/ws-trim.el;
+  home.file.".emacs.d/lisp/ws-trim.el".source = ../src/ws-trim.el;
   programs.emacs = {
     enable = true;
     package = emacs;

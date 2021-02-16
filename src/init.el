@@ -62,12 +62,14 @@
 
 (use-package
   flycheck
-  :hook ((after-init . global-flycheck-mode)
-	 (typescript-mode . 'flycheck-mode)))
+  :init (global-flycheck-mode))
 
 (use-package
   dracula-theme
   :config (load-theme 'dracula t))
+
+(use-package doom-modeline
+  :init (doom-modeline-mode 1))
 
 (use-package
   elisp-format)
@@ -125,7 +127,7 @@
 ;; whitespace
 (use-package
   ws-trim
-  :load-path ".")
+  :load-path "lisp/")
 (use-package
   ws-butler
   :hook (prog-mode . ws-butler-mode))
