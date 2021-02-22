@@ -2,30 +2,50 @@
 ;;; Commentary:
 
 ;;; Code:
+
+(defun jp/startup ()
+  "See how long Emacs takes to load."
+  (message "Emacs loaded in %s with %d garbos"
+	   (format "%.2f seconds" (float-time (time-subtract after-init-time before-init-time)))
+	   gcs-done))
+(add-hook 'emacs-startup-hook #'jp/startup)
+(setq gc-cons-threshold (* 50 1000 1000))
+
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
+
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+(eval-when-compile
+  (require 'use-package))
+(setq use-package-always-ensure t)
+
 (server-start)
-(set-frame-font "Fira Code 16" nil t)
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+(set-frame-font "Fira Code 12" nil t)
+
 (xterm-mouse-mode 1)
 (global-prettify-symbols-mode +1)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
+(global-hl-line-mode 1)
+(global-display-line-numbers-mode)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(initial-buffer-choice "~/.emacs")
- '(package-selected-packages '(emojify kubernetes dockerfile-mode docker magithub deadgrep tide
-				       rjsx-mode json-mode web-mode yaml-mode terraform-mode
-				       company-quickhelp ws-butler projectile dashboard-hackernews
-				       elisp-format use-package typescript-mode tablist pos-tip
-				       nyan-mode nix-mode neotree magit-popup magit js2-mode ivy
-				       flycheck exec-path-from-shell dracula-theme dashboard company
-				       all-the-icons treemacs treemacs-all-the-icons treemacs-magit treemacs-projectile)))
+ '(package-selected-packages '(which-key emojify kubernetes dockerfile-mode docker doom-modeline
+					 magithub deadgrep tide rjsx-mode json-mode web-mode
+					 yaml-mode terraform-mode page-break-lines company-quickhelp
+					 ws-butler projectile dashboard-hackernews elisp-format
+					 use-package typescript-mode tablist pos-tip nyan-mode
+					 nix-mode neotree magit-popup magit js2-mode ivy flycheck
+					 exec-path-from-shell dracula-theme dashboard company
+					 all-the-icons treemacs treemacs-all-the-icons
+					 treemacs-magit treemacs-projectile)))
 
 (setq default-directory (getenv "HOME"))
 
@@ -44,16 +64,6 @@
   "This is a Linux device."
   (eq system-type 'gnu/linux))
 
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(package-initialize)
-
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(eval-when-compile
-  (require 'use-package))
-(setq use-package-always-ensure t)
 
 (use-package
   exec-path-from-shell
@@ -68,7 +78,8 @@
   dracula-theme
   :config (load-theme 'dracula t))
 
-(use-package doom-modeline
+(use-package
+  doom-modeline
   :init (doom-modeline-mode 1))
 
 (use-package
@@ -86,28 +97,37 @@
   (setq neo-vc-integration '(face))
   :bind (("<f2>" . neotree-toggle)))
 
-(use-package treemacs
-  :init
-  (use-package treemacs-all-the-icons)
-  (use-package treemacs-magit)
-  (use-package treemacs-projectile))
+(use-package
+  treemacs
+  :init (use-package
+	  treemacs-all-the-icons)
+  (use-package
+    treemacs-magit)
+  (use-package
+    treemacs-projectile))
 
 (use-package
   ivy
   :init (ivy-mode 1))
 
 (use-package
+  diminish)
+
+(use-package
+  projectile
+  :config (setq projectile-completion-system 'ivy projectile-mode-line-prefix " Pro")
+  (projectile-mode 1))
+
+(use-package
+  dashboard-hackernews)
+(use-package
+  page-break-lines)
+
+(use-package
   dashboard
-  ;; :if (< (length command-line-args) 2)
-  :init (use-package
-	  dashboard-hackernews)
-  (use-package
-    page-break-lines)
-  :hook (after-init . dashboard-refresh-buffer)
-  :config (setq initial-buffer-choice
-		(lambda ()
-		  (get-buffer "*dashboard*")))
-  (setq dashboard-startup-banner "~/.dotfiles/glamanon.jpeg")
+  :requires (dashboard-hackernews page-break-lines projectile)
+  :init (add-hook 'after-init-hook 'dashboard-refresh-buffer)
+  :config (setq dashboard-startup-banner "~/.dotfiles/glamanon.jpeg")
   (setq dashboard-center-content t)
   (setq dashboard-projects-backend 'projectile)
   (setq dashboard-set-heading-icons t)
@@ -120,16 +140,18 @@
   (dashboard-setup-startup-hook))
 
 (use-package
-  projectile
-  :config (setq projectile-completion-system 'ivy projectile-mode-line-prefix " Pro")
-  (projectile-mode 1))
+  which-key
+  :defer t
+  :config (which-key-mode))
 
 ;; whitespace
 (use-package
   ws-trim
+  :defer t
   :load-path "lisp/")
 (use-package
   ws-butler
+  :defer t
   :hook (prog-mode . ws-butler-mode))
 (setq-default show-trailing-whitespace nil)
 
@@ -179,8 +201,8 @@
 
 (use-package
   typescript-mode
-  :config (setq typescript-indent-level 2)
-  :hook (typescript-mode . #'subword-mode))
+  :hook (typescript-mode . #'subword-mode)
+  :config (setq typescript-indent-level 2))
 
 (use-package
   js2-mode)
@@ -241,6 +263,7 @@
 
 (use-package
   nyan-mode
+  :if (display-graphic-p)
   :config (setq nyan-animate-nyancat nil)
   (setq nyan-wavy-trail t)
   (nyan-mode 1))
