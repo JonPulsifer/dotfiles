@@ -15,9 +15,9 @@ let
   dotfiles = "${homedir}/.dotfiles";
   commonEnv = rec {
     CLOUDSDK_CONFIG = "${homedir}/.config/gcloud";
-    EDITOR = "emacs";
+    EDITOR = "emacsclient -t";
     GIT_EDITOR = EDITOR;
-    VISUAL = EDITOR;
+    VISUAL = "emacsclient -c -a emacs";
     GO111MODULE = "on";
     GOPATH = homedir;
     KUBECONFIG =
