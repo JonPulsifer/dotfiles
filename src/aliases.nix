@@ -7,7 +7,7 @@
   switch = "home-manager switch";
   reload = "unset __HM_SESS_VARS_SOURCED && " + switch + " && . ~/.profile";
   tree = "exa --tree";
+  em = "emacsclient -cnqua ''";
   emacs-gui = "open ${emacs}/Applications/Emacs.app";
-  emacs = "emacsclient -n -c -a ''";
-  vim = emacs;
+  vim = em;
 }
