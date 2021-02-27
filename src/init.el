@@ -5,25 +5,36 @@
 
 (defun jp/startup ()
   "See how long Emacs takes to load."
-  (message "Emacs loaded in %s with %d garbos"
-	   (format "%.2f seconds" (float-time (time-subtract after-init-time before-init-time)))
-	   gcs-done))
+  (message "Emacs loaded in %s with %d garbos" (format "%.2f seconds" (emacs-init-time)) gcs-done))
 (add-hook 'emacs-startup-hook #'jp/startup)
-(setq gc-cons-threshold (* 50 1000 1000))
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
+;; bootstrap `use-package'
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
 
-(eval-when-compile
-  (require 'use-package))
+;; keep customizations out of init.el
+(setq custom-file (concat user-emacs-directory "custom.el"))
+(if (file-exists-p custom-file)
+    (load custom-file))
+
+;; whoami
+(setq user-full-name "Jonathan Pulsifer" user-mail-address "jonathan@pulsifer.ca")
+
+(message "LETSGO..")
+
+(eval-when-compile (add-to-list 'load-path "~/.emacs.d/lisp")
+		   (require 'use-package))
+
 (setq use-package-always-ensure t)
 
+;; start emacs daemon
 (server-start)
+
 (set-frame-font "Fira Code 12" nil t)
 
 (xterm-mouse-mode 1)
@@ -31,21 +42,6 @@
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-hl-line-mode 1)
 (global-display-line-numbers-mode)
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages '(which-key emojify kubernetes dockerfile-mode docker doom-modeline
-					 magithub deadgrep tide rjsx-mode json-mode web-mode
-					 yaml-mode terraform-mode page-break-lines company-quickhelp
-					 ws-butler projectile dashboard-hackernews elisp-format
-					 use-package typescript-mode tablist pos-tip nyan-mode
-					 nix-mode neotree magit-popup magit js2-mode ivy flycheck
-					 exec-path-from-shell dracula-theme dashboard company
-					 all-the-icons treemacs treemacs-all-the-icons
-					 treemacs-magit treemacs-projectile)))
 
 (setq default-directory (getenv "HOME"))
 
@@ -64,11 +60,39 @@
   "This is a Linux device."
   (eq system-type 'gnu/linux))
 
+(when (is-mac-p)
+ (setq mac-option-modifier 'super
+       mac-command-modifier 'meta))
+
+(use-package
+  rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+(use-package
+  rainbow-mode
+  :hook (prog-mode . rainbow-mode))
 
 (use-package
   exec-path-from-shell
   :if (is-mac-p)
   :init (exec-path-from-shell-initialize))
+
+(use-package
+  helpful
+  :bind (("C-h f" . helpful-callable)
+	 ("C-h v" . helpful-variable)
+	 ("C-h k" . helpful-key)
+	 ("C-c C-d" . helpful-at-point)))
+
+(use-package
+  yasnippet
+  :diminish (yas-minor-mode . "")
+  :hook (after-init . yas-global-mode))
+
+
+(use-package
+  yasnippet-snippets
+  :after yasnippet)
 
 (use-package
   flycheck
@@ -83,19 +107,11 @@
   :init (doom-modeline-mode 1))
 
 (use-package
-  elisp-format)
-
-(use-package
   all-the-icons
   ;;:config
   ;; (all-the-icons-install-fonts)
   )
 
-(use-package
-  neotree
-  :config (setq neo-theme 'icons)
-  (setq neo-vc-integration '(face))
-  :bind (("<f2>" . neotree-toggle)))
 
 (use-package
   treemacs
@@ -104,29 +120,74 @@
   (use-package
     treemacs-magit)
   (use-package
-    treemacs-projectile))
+    treemacs-projectile)
+  :bind (("<f2>" . treemacs)))
 
-(use-package
-  ivy
-  :init (ivy-mode 1))
+
+(use-package lsp-mode
+  :hook ((lsp-mode . lsp-enable-which-key-integration)
+         (go-mode . lsp-deferred))
+  :commands (lsp lsp-deferred)
+  :init
+  (setq lsp-keymap-prefix "C-c s"))
+
+(use-package helm
+  :defer nil
+  :diminish helm-mode
+  :bind (("C-x c" . helm-command-prefix-key)
+         ("C-c i" . helm-imenu)
+         ("C-c m" . helm-all-mark-rings)
+         ("C-x b" . helm-mini)
+         ("C-c r" . helm-regexp)
+         ("C-x C-f" . helm-find-files)
+         ("M-x" . helm-M-x)
+         ("M-y" . helm-show-kill-ring))
+  :config
+  (helm-mode t))
+
+(use-package helm-ag
+  :bind ("C-c g" . helm-projectile-ag))
+
+(use-package helm-atoms
+  :defer t)
+
+(use-package helm-descbinds)
+
+(use-package helm-lsp
+  :after (helm lsp-mode))
+
+
+(use-package helm-projectile
+  :after (helm projectile))
+
+
+(use-package helm-system-packages
+  :defer t)
+
+
+(use-package helm-tramp
+  :commands (helm-tramp))
 
 (use-package
   diminish)
 
 (use-package
   projectile
-  :config (setq projectile-completion-system 'ivy projectile-mode-line-prefix " Pro")
+  :after helm
+  :config (setq projectile-completion-system 'helm projectile-mode-line-prefix " Pro")
   (projectile-mode 1))
 
 (use-package
   dashboard-hackernews)
+
 (use-package
-  page-break-lines)
+  page-break-lines
+  :config (global-page-break-lines-mode))
 
 (use-package
   dashboard
   :requires (dashboard-hackernews page-break-lines projectile)
-  :init (add-hook 'after-init-hook 'dashboard-refresh-buffer)
+  :hook (after-init . dashboard-refresh-buffer)
   :config (setq dashboard-startup-banner "~/.dotfiles/glamanon.jpeg")
   (setq dashboard-center-content t)
   (setq dashboard-projects-backend 'projectile)
@@ -142,13 +203,15 @@
 (use-package
   which-key
   :defer t
-  :config (which-key-mode))
+  :hook (after-init . which-key-mode)
+  :init (which-key-setup-side-window-right-bottom))
 
 ;; whitespace
 (use-package
   ws-trim
   :defer t
   :load-path "lisp/")
+
 (use-package
   ws-butler
   :defer t
@@ -185,7 +248,6 @@
 ;; web
 (use-package
   web-mode
-  :ensure t
   :mode (("\\.html?\\'" . web-mode)
 	 ("\\.tsx\\'" . web-mode)
 	 ("\\.jsx\\'" . web-mode))
@@ -209,11 +271,11 @@
 
 (use-package
   json-mode
-  :mode "\\.json$")
+  :mode "\\.json$'")
 
 (use-package
   rjsx-mode
-  :mode "\\.js\\.*"
+  :mode "\\.js$"
   :hook (rjsx-mode . tide-setup))
 
 (defun setup-tide-mode ()
@@ -230,8 +292,12 @@
   tide
   :after (typescript-mode company flycheck web-mode)
   :hook ((typescript-mode . tide-setup)
-	 (typescript-mode . tide-hl-identifier-mode)
-	 (before-save . tide-format-before-save)))
+        (typescript-mode . tide-hl-identifier-mode)
+        (before-save . tide-format-before-save)))
+
+(use-package prettier-js
+  :ensure t
+  :hook (web-mode . prettier-js-mode))
 
 (use-package
   deadgrep)
@@ -264,8 +330,9 @@
 (use-package
   nyan-mode
   :if (display-graphic-p)
-  :config (setq nyan-animate-nyancat nil)
+  :custom (setq nyan-animate-nyancat nil)
   (setq nyan-wavy-trail t)
+  :config
   (nyan-mode 1))
 
 (provide 'init)
