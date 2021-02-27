@@ -8,4 +8,6 @@
   reload = "unset __HM_SESS_VARS_SOURCED && " + switch + " && . ~/.profile";
   tree = "exa --tree";
   emacs-gui = "open ${emacs}/Applications/Emacs.app";
+  emacs = "emacsclient -n -c -a ''";
+  vim = emacs;
 }
