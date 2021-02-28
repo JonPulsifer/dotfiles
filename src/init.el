@@ -1,7 +1,16 @@
 ;;; init.el --- my init.el
 ;;; Commentary:
-
 ;;; Code:
+
+;; keep customizations out of init.el
+(setq custom-file (concat user-emacs-directory "custom.el"))
+(if (file-exists-p custom-file)
+    (load custom-file))
+
+;; whoami
+(setq user-full-name "Jonathan Pulsifer" user-mail-address "jonathan@pulsifer.ca")
+
+(message "Starting Emacs..")
 
 (defun jp/startup ()
   "See how long Emacs takes to load."
@@ -16,17 +25,6 @@
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
-
-;; keep customizations out of init.el
-(setq custom-file (concat user-emacs-directory "custom.el"))
-(if (file-exists-p custom-file)
-    (load custom-file))
-
-;; whoami
-(setq user-full-name "Jonathan Pulsifer" user-mail-address "jonathan@pulsifer.ca")
-
-(message "LETSGO..")
-
 (eval-when-compile (add-to-list 'load-path "~/.emacs.d/lisp")
 		   (require 'use-package))
 
@@ -89,7 +87,6 @@
   :diminish (yas-minor-mode . "")
   :hook (after-init . yas-global-mode))
 
-
 (use-package
   yasnippet-snippets
   :after yasnippet)
@@ -112,7 +109,6 @@
   ;; (all-the-icons-install-fonts)
   )
 
-
 (use-package
   treemacs
   :init (use-package
@@ -122,7 +118,6 @@
   (use-package
     treemacs-projectile)
   :bind (("<f2>" . treemacs)))
-
 
 (use-package lsp-mode
   :hook ((lsp-mode . lsp-enable-which-key-integration)
@@ -156,14 +151,11 @@
 (use-package helm-lsp
   :after (helm lsp-mode))
 
-
 (use-package helm-projectile
   :after (helm projectile))
 
-
 (use-package helm-system-packages
   :defer t)
-
 
 (use-package helm-tramp
   :commands (helm-tramp))
@@ -221,9 +213,19 @@
 ;; completion
 (use-package
   company
+  :requires (yasnippet)
   :config (setq company-show-numbers t)
   (setq company-tooltip-align-annotations t)
   (setq company-tooltip-flip-when-above t)
+  (setq company-idle-delay 0)
+  (setq company-show-numbers t)
+  (setq company-minimum-prefix-length 2)
+  (setq company-dabbrev-downcase nil)
+  (setq company-dabbrev-other-buffers t)
+  (setq company-auto-complete nil)
+  (setq company-dabbrev-code-other-buffers 'all)
+  (setq company-dabbrev-code-everywhere t)
+  (setq company-dabbrev-code-ignore-case t)
   (global-company-mode t))
 
 (use-package
@@ -296,8 +298,23 @@
         (before-save . tide-format-before-save)))
 
 (use-package prettier-js
-  :ensure t
   :hook (web-mode . prettier-js-mode))
+
+;; shopify
+(use-package shadowenv
+  :hook (after-init . shadowenv-global-mode))
+
+;; ruby
+(use-package robe
+  :after company
+  :hook (ruby-mode . robe-mode)
+  :config
+  (push 'company-robe company-backends))
+
+(use-package rubocop
+  :ensure t
+  :hook (ruby-mode . rubocop-mode)
+  :diminish rubocop-mode)
 
 (use-package
   deadgrep)
