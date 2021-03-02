@@ -312,8 +312,8 @@
   (push 'company-robe company-backends))
 
 (use-package rubocop
-  :ensure t
   :hook (ruby-mode . rubocop-mode)
+  :config (setq rubocop-autocorrect-on-save t)
   :diminish rubocop-mode)
 
 (use-package
